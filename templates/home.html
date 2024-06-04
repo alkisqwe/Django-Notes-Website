@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load index from tags %}
+{% load pagecalc from tags %}
+{% load pagecalc2 from tags %}
+{% load static %}
+{% load mathfilters %}
+
+{% block title %}Notes{% endblock title %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="card row-hover pos-relative py-2 px-1 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
+            <button type="button" class="btn btn-primary p-4" onclick="location.href='{% url 'create' %}'">Create Note</button>
+        </div>
+    {% endif %}
+    {% if user.is_authenticated %}
+        {% for notes in object_list %}
+        	{% if notes.permission == 1 or user == notes.author %}
+            	<div class="card row-hover pos-relative py-3 px-3 mb-3 border-primary border-top-0 border-right-0 border-bottom-0 rounded-0">
+                	<div class="row align-items-center">
+                	    <div class="col-md-8 mb-3 mb-sm-0">
+                			<h5>
+                	    		<a 
+                	    		{% if user == notes.author %}
+	            	        		href="{% url 'edit' notes.pk %}" 
+	            	        	{% else %}
+	            	        	    href="{% url 'view' notes.pk %}" 
+	            	        	{% endif %}
+                	    		class="text-primary">{{ notes.notename }}</a>
+                			</h5>
+                			<div class="container">
+								<div class="row">
+									<div class="col-auto p-0 border-0 align-baselin">
+                						<p class="text-sm"><span class="op-6">Posted {{ timelapsed|index:forloop.counter0 }} {{ days|index:forloop.counter0 }} ago b</p>
+                					</div>
+                					 <div class="col-auto p-0 border-0 align-baseline">
+			                			<form class="form-inline-block" id="authorform" action="{% url 'home' %}">
+			                			    <i>y </i>
+            			    				<button name="authorsort" type="submit" value="{{ notes.author.pk }}" class="text-black btn p-0 border-0 align-baseline btn-link">{{ notes.author.username }}</button>
+                						</form>
+                					</div>
+                				</div>
+                			</div>
+                			<div class="text-sm op-5">
+                			    {% if notes.permission == 1 %}
+               						<p class="text-black mr-2">Public</p>
+               		 			{% elif notes.permission == 0 %}
+                					<p class="text-black mr-2">Private</p>
+                				{% endif %}
+                			</div>
+			        	</div>
+			        	<div class="col-md-4 op-7">
+                			<div class="row text-center op-7">
+                    			<div class="col px-1"></div>
+                    			{% if user == notes.author %}
+                    			    <div class="col px-1">
+                    			    	<a href="{% url 'delete' notes.pk %}">
+	                    			    	<div class="col px-1">
+    	                			    	    <img src="{% static 'delete.png' %}">
+    	                			    	    <span class="d-block text-sm">Delete</span>
+    	                			    	</div>
+    	                				</a>
+    	                			</div>
+                    			{% endif %}
+	               			</div>
+		            	</div>
+		        	</div>
+		    	</div>
+			{% endif %}
+		{% endfor %}
+    {% else %}
+        {% for notes in object_list %}
+            {% if notes.permission == 1 %}
+                <div class="card row-hover pos-relative py-3 px-3 mb-3 border-primary border-top-0 border-right-0 border-bottom-0 rounded-0">
+                    <div class="row align-items-center">
+                        <div class="col-md-8 mb-3 mb-sm-0">
+                			<h5>
+                    			<a href="{% url 'view' notes.pk %}" class="text-primary">{{ notes.notename }}</a>
+                			</h5>
+                			<p class="text-sm"><span class="op-6">Posted {{ timelapsed|index:forloop.counter0 }} {{ days|index:forloop.counter0 }} ago by <a class="text-black" href="#">{{ notes.author.username }}</a></p>
+                			<div class="text-sm op-5">
+                				<p class="text-black mr-2">Public</p>
+                			</div>
+			            </div>
+		        	</div>
+		    	</div>
+		    {% endif %}
+		{% endfor %}
+	{% endif %}
+	<div class="container-fluid w-100">
+		<div class="d-flex justify-content-center position-fixed fixed-bottom">
+			<nav aria-label="...">
+				<ul class="pagination">
+    				<li class="page-item">
+    					<form>
+    					    {% if object_list.has_previous %}
+	    						<button name="page" type="submit "class="page-link" value="{{ object_list.previous_page_number }}">Previous</button>
+	    					{% else %}
+	    					    <button name="page" type="submit "class="page-link disabled">Previous</button>
+	    					{% endif %}
+    					</form>
+    				</li>
+    				{% if object_list.paginator.num_pages < 10 %}
+    					{% for i in "x"|rjust:object_list.paginator.num_pages %}
+    						<li class="page-item">
+    					    	<form>
+    					    	    {% if forloop.counter == object_list.number %}
+	    								<button name="page" type="submit "class="page-link active" value="{{ forloop.counter }}">{{ forloop.counter }}</button>
+	    							{% else %}
+	    								<button name="page" type="submit "class="page-link" value="{{ forloop.counter }}">{{ forloop.counter }}</button>
+	    							{% endif %}
+    							</form>
+    						</li>
+    					{% endfor %}
+    				{% else %}
+    				    {% if object_list.number > 4 %}
+    				        {% if not object_list.paginator.num_pages|sub:object_list.number > 4 %}
+	    				    	{% for i in "x"|rjust:"9" %}
+    								<li class="page-item">
+    						    		<form>
+    						    		    {% pagecalc object_list.number object_list.paginator.num_pages forloop.counter as action %}
+    						    		    {% if action == object_list.number %}
+		    									<button name="page" type="submit "class="page-link active" value="{{ action }}">{{ action }}</button>
+		    								{% else %}
+		    									<button name="page" type="submit "class="page-link" value="{{ action }}">{{ action }}</button>
+		    								{% endif %}
+    									</form>
+    								</li>
+    							{% endfor %}
+    						{% else %}
+    						    {% for i in "x"|rjust:"9" %}
+    								<li class="page-item">
+    						    		<form>
+    						    		    {% pagecalc2 object_list.number forloop.counter as action %}
+    						    		    {% if action == object_list.number %}
+		    									<button name="page" type="submit "class="page-link active" value="{{ action }}">{{ action }}</button>
+		    								{% else %}
+		    									<button name="page" type="submit "class="page-link" value="{{ action }}">{{ action }}</button>
+		    								{% endif %}
+    									</form>
+    								</li>
+    							{% endfor %}
+							{% endif %}
+    				    {% else %}
+    				        {% for i in "x"|rjust:"9" %}
+    							<li class="page-item">
+    					    		<form>
+    					    		    {% if forloop.counter == object_list.number %}
+	    									<button name="page" type="submit "class="page-link active" value="{{ forloop.counter }}">{{ forloop.counter }}</button>
+	    								{% else %}
+	    									<button name="page" type="submit "class="page-link" value="{{ forloop.counter }}">{{ forloop.counter }}</button>
+	    								{% endif %}
+    								</form>
+    							</li>
+    						{% endfor %}
+    				    {% endif %}
+    				{% endif %}
+    				<li class="page-item">
+    				    <form>
+    				        {% if object_list.has_next %}
+    							<button name="page" type="submit "class="page-link" value="{{ object_list.next_page_number }}">Next</button>
+    						{% else %}
+    						    <button name="page" type="submit "class="page-link disabled">Next</button>
+    						{% endif %}
+    					</form>
+    				</li>
+  				</ul>
+			</nav>
+		</div>
+	</div>
+{% endblock content %}

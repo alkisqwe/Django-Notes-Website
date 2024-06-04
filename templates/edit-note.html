@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Note{% endblock title %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm">
+        <button type="button" class="btn btn-primary btn-block p-4 w-100" onclick="location.href='{% url 'home' %}'">Cancel</button>
+    </div>
+    <div class="col-sm">
+        <div class="dropdown w-100">
+            {% if note.permission == 0 %}
+	            <button type="button" class="btn btn-success dropdown-toggle p-4 w-100" data-bs-toggle="dropdown" aria-expanded="false">Private</button>
+	        {% elif note.permission == 1 %}
+	        	<button type="button" class="btn btn-success dropdown-toggle p-4 w-100" data-bs-toggle="dropdown" aria-expanded="false">Public</button>
+	        {% endif %}
+            <ul class="dropdown-menu" style="width: 100%;">
+                <form id="my_form" method="post">{% csrf_token %}
+                    <input type="hidden" id="private" name="private" value="privatevalue">
+                    <input class="dropdown-item open text-center btn-success w-100" style="position: initial;" type="submit" value="Private">
+                </form>
+                <form id="my_form" method="post">{% csrf_token %}
+                    <input type="hidden" id="public" name="public" value="publicvalue">
+                    <input class="dropdown-item open text-center btn-success w-100" style="position: initial;" type="submit" value="Public">
+                </form>
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm">
+        <form method="post" id="usrnote">{% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-block p-4 w-100">Save</button>
+        </form>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+<p>Note Name</p>
+<input type="text" id="notename" name="notename" class="w-100" form="usrnote" value="{{ note.notename }}">
+<p class="text-start mt-3">Note Text</p>
+</div>
+
+
+<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/perl/perl.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/abbott.min.css"></link>
+<textarea id="note" name="note" form="usrnote">{{ note.note }}</textarea>
+<style>
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+.CodeMirror {
+  flex-grow: 1
+}
+
+</style>
+<script>
+var editor = CodeMirror.fromTextArea(document.getElementById('note'), {
+    lineNumbers: true,
+    mode: 'text',
+});
+</script>
+
+{% endblock content %}

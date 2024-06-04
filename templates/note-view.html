@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Note View{% endblock title %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm">
+        <button type="button" class="btn btn-primary btn-block p-4 w-100" onclick="location.href='{% url 'home' %}'">Go Back</button>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+<p>Note Name</p>
+<p class="w-100">{{ note.notename }}</p>
+<p class="text-start mt-3">Note Text</p>
+</div>
+
+
+<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/perl/perl.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/abbott.min.css"></link>
+<textarea id="note" name="note">{{ note.note }}</textarea>
+<style>
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+.CodeMirror {
+  flex-grow: 1
+}
+
+</style>
+<script>
+var editor = CodeMirror.fromTextArea(document.getElementById('note'), {
+    lineNumbers: true,
+    mode: 'text',
+});
+</script>
+
+{% endblock content %}
