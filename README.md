@@ -19,6 +19,7 @@ python3 manage.py runserver
 7) Use Of Bootstrap & Crispy
 8) Use of 3rd Party Apps
 9) Preconfigured Static Files For Production Using Whitenoise
+10) Use of Custom Editor (Codemirror)
 
 # Examples
 
