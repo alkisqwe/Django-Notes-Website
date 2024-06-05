@@ -11,7 +11,7 @@ python3 manage.py runserver
 ```
 # Features
 1) Custom User Model
-2) Paginator & Search
+2) Paginator & Search & Sort
 3) Custom Template Tags
 4) Utilization Of Class Based Views
 5) Purposely Minimalize Authentication System
